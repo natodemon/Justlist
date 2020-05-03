@@ -113,7 +113,12 @@ class ListGenState extends State<ListGen> {
     await dbHelper.insertItem(tempItem2);
 
     updateListDB();
+  }
 
-    //Quick git access test
+  void stringList() async {
+    // When item ID added to list, sleep no. of secs to allow for multiple selection
+    // then convert to string & store in shared perfs
+    // Retrieve list upon app load if set empty, convert to int set from strings
+    // 
   }
 }

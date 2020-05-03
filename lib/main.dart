@@ -4,7 +4,7 @@ import './pages/home_page.dart';
 void main() => runApp(ShoppingList());
 
 class ShoppingList extends StatelessWidget {
-  final appTitle = 'Shopping List';
+  final appTitle = 'Justlist';
 
   @override
   Widget build(BuildContext context) {
