@@ -113,5 +113,7 @@ class ListGenState extends State<ListGen> {
     await dbHelper.insertItem(tempItem2);
 
     updateListDB();
+
+    //Quick git access test
   }
 }
