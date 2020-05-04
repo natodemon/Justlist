@@ -4,6 +4,9 @@ import 'package:shopping_list_vs/models/item.dart';
 import 'package:sqflite/sqflite.dart';
 
 class FavouriteList extends StatefulWidget {
+  final int curShopListId;
+
+  FavouriteList(this.curShopListId);
   @override
   FavouriteListState createState() => FavouriteListState();
 }
@@ -26,6 +29,15 @@ class FavouriteListState extends State<FavouriteList> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            if(_selectedIDs.length > 0){
+              addSelectedItems();
+            }
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text("Favourites"),
       ),
       body: ListView.builder(
@@ -45,6 +57,12 @@ class FavouriteListState extends State<FavouriteList> {
                 onTap: () {
                   setState(() {
                     // Do some selection stuff here
+                    int curItemId = _favList[index].id;
+                    if(_selectedIDs.contains(curItemId)) {
+                      _selectedIDs.remove(curItemId);
+                    }else{
+                      _selectedIDs.add(curItemId);
+                    }
                   });
                 },
               ),
@@ -88,8 +106,19 @@ class FavouriteListState extends State<FavouriteList> {
       )
       .closed.then((reason) {
         if(reason != SnackBarClosedReason.action) {
-          dbHelper.removeFavItem(dismissedListItem.id);
+          //dbHelper.removeFavItem(dismissedListItem.id);
+          // Think this should be an actual delete here, duh..
+          dbHelper.deleteItem(dismissedListItem.id);
         }
       });
+  }
+
+  // Will need check if any selections made 
+  void addSelectedItems() {
+    List<int> selecIdList = _selectedIDs.toList();
+
+    for(int i = 0; i < _selectedIDs.length; i++) {
+      dbHelper.setItemShopList(selecIdList[i], widget.curShopListId);
+    }
   }
 }

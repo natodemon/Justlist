@@ -93,6 +93,17 @@ class DBHelper {
     return favItems;
   }
 
+  Future<Item> getItemById(int id) async{
+    Database db = await this.database;
+
+    var result = await db.query(tableItems,
+      where: '$colId = $id'
+    );
+
+    Item selecItem = Item.fromMapObj(result[0]);
+    return selecItem;
+  }
+
   Future<int> insertItem(Item newItem) async{
     Database db = await this.database;
 
@@ -108,9 +119,19 @@ class DBHelper {
   }
 
   Future<int> removeFavItem(int id) async{
+    return setItemShopList(id, 0);
+  }
+
+  Future<int> setItemShopList(int itemId, int shopListId) async{
     Database db = await this.database;
 
-    var result = 1; // Add db.update operation here
+    Item itToUpdate = await getItemById(itemId);
+    itToUpdate.listId = shopListId;
+
+    var result = await db.update(tableItems,
+      itToUpdate.toMap(), 
+      where: '$colId = $itemId'
+    );
     return result;
   }
 
@@ -138,10 +159,10 @@ class DBHelper {
     return fList;
   }
 
-    Future<List<Map<String, dynamic>>> getAllItems() async {
-    Database db = await this.database;
+  Future<List<Map<String, dynamic>>> getAllItems() async {
+  Database db = await this.database;
 
-    var result = await db.query(tableItems);
-    return result;
+  var result = await db.query(tableItems);
+  return result;
   }
 }

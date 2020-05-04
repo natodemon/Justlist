@@ -17,8 +17,17 @@ class HomePageState extends State<HomePage> {
   DBHelper dbHelper = DBHelper();
   bool isChecked = false;
 
+  int curShoplistId;   // Increment when making new list, store when changing list
+                       // And when exiting app, using shared prefs
+                       // !! 0 SHOULD NOT BE VALID SHOPLISTID !!
+                       // !! INCREMENT FROM 1 !!
+
   @override
   Widget build(BuildContext context) {
+    if(curShoplistId == null) {
+      curShoplistId = 1; // Will retrieve this from shared_prefs
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -27,11 +36,15 @@ class HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.navigate_next),
             tooltip: 'Faves Page',
-            onPressed: () {
+            onPressed: () async {
+              _scaffoldKey.currentState.hideCurrentSnackBar();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => FavouriteList())
+                MaterialPageRoute(builder: (context) => FavouriteList(curShoplistId))
               );
+              Future.delayed(Duration(seconds: 3), () {
+                _listGenState.currentState.updateListDB();
+              });
             },
           )
         ],
@@ -48,13 +61,13 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              title: Text('Cat 1', style: TextStyle(fontSize: 18.0,),),
+              title: Text('Dynamic List', style: TextStyle(fontSize: 18.0,),),
               onTap: () {
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              title: Text('Cat 2', style: TextStyle(fontSize: 18.0,),),
+              title: Text('Future Feature', style: TextStyle(fontSize: 18.0,),),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -63,7 +76,7 @@ class HomePageState extends State<HomePage> {
         ),
       ),
       drawerEdgeDragWidth: MediaQuery.of(context).size.width /6,
-      body: ListGen(key: _listGenState),
+      body: ListGen(curShoplistId, key: _listGenState),
       floatingActionButton: FloatingActionButton(
         onPressed: () async{
           _scaffoldKey.currentState.hideCurrentSnackBar();
@@ -71,7 +84,7 @@ class HomePageState extends State<HomePage> {
           await showDialog(
             context: context,
             builder: (context){
-              return ListInputDialog();
+              return ListInputDialog(curShoplistId);
             }
           );
           _listGenState.currentState.updateListDB();
@@ -81,46 +94,49 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Future<String> _constructDialog(BuildContext context) async{
-    String itemName = '';
-    //bool newchecked;
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('New item entry'),
-          content: TextField(
-            autofocus: true,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: InputDecoration(hintText: 'Enter item name e.g. bread'),
-            onChanged: (value) {
-              itemName = value;
-            },
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Add'),
-              onPressed: () {
-                Navigator.of(context).pop(itemName);
-              },
-            ),
-            Text('Favorite'),
-            Checkbox(
-              value: isChecked,
-              onChanged: (bool newChecked) {
-                setState(() {
-                  isChecked = newChecked;
-                });
-              }
-            )
-          ],
-        );
-      }
-    );
-  }
 
-  Item _constructNewItem(String itemName) {
-    // Will need some validation here or at time of input
-    return Item(itemName,false,0);
-  }
+  // Future<String> _constructDialog(BuildContext context) async{
+  //   String itemName = '';
+  //   //bool newchecked;
+  //   return showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: Text('New item entry'),
+  //         content: TextField(
+  //           autofocus: true,
+  //           textCapitalization: TextCapitalization.sentences,
+  //           decoration: InputDecoration(hintText: 'Enter item name e.g. bread'),
+  //           onChanged: (value) {
+  //             itemName = value;
+  //           },
+  //         ),
+  //         actions: <Widget>[
+  //           FlatButton(
+  //             child: Text('Add'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop(itemName);
+  //             },
+  //           ),
+  //           Text('Favorite'),
+  //           Checkbox(
+  //             value: isChecked,
+  //             onChanged: (bool newChecked) {
+  //               setState(() {
+  //                 isChecked = newChecked;
+  //               });
+  //             }
+  //           )
+  //         ],
+  //       );
+  //     }
+  //   );
+  // }
+
+  // Item _constructNewItem(String itemName) {
+  //   // Will need some validation here or at time of input
+  //   return Item(itemName,false,0);
+  // }
+
+  // Can most likely remove this ^
 }

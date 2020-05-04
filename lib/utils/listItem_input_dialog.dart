@@ -4,7 +4,9 @@ import 'package:shopping_list_vs/utils/database_helper.dart';
 import 'package:shopping_list_vs/models/item.dart';
 
 class ListInputDialog extends StatefulWidget {
+  final int shopListId;
 
+  ListInputDialog(this.shopListId); 
   @override
   ListInputDialogState createState() => ListInputDialogState();
 }
@@ -65,6 +67,6 @@ class ListInputDialogState extends State<ListInputDialog> {
   Item _constructNewItem(String itemName, bool favourite) {
     // Will need some validation here or at time of input
     //int fav = (favourite == true ? 1 : 0);
-    return Item(itemName,favourite,0);
+    return Item(itemName,favourite,widget.shopListId);
   }
 }
