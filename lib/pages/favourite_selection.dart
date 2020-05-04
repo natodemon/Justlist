@@ -15,6 +15,7 @@ class FavouriteListState extends State<FavouriteList> {
   DBHelper dbHelper = DBHelper();
   List<Item> _favList;
   final Set<int> _selectedIDs = Set<int>();
+  final GlobalKey<ScaffoldState> _favScaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +29,12 @@ class FavouriteListState extends State<FavouriteList> {
     }
 
     return Scaffold(
+      key: _favScaffoldKey,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
+            _favScaffoldKey.currentState.hideCurrentSnackBar();
             if(_selectedIDs.length > 0){
               addSelectedItems();
             }
