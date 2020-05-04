@@ -57,6 +57,19 @@ class FavouriteListState extends State<FavouriteList> {
               child: ListTile(
                 title: Text(_favList[index].name, style: TextStyle(fontSize: 18.0)),
                 dense: true,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      (_favList[index].timeout ?? 0).toString(),
+                      style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      ' Days',
+                      style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w200),
+                    )
+                  ]
+                ),
                 onTap: () {
                   setState(() {
                     // Do some selection stuff here

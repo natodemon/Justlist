@@ -72,7 +72,10 @@ class ListInputDialogState extends State<ListInputDialog> {
                         LengthLimitingTextInputFormatter(2)
                       ],
                       onChanged: (newTimeout) {
-                        timeoutVal = num.tryParse(newTimeout);
+                        setState(() {
+                          timeoutVal = num.tryParse(newTimeout);
+                          isFavourite = true;
+                        });
                       },
                     ),
                   )
