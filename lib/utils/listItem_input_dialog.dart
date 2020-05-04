@@ -13,21 +13,24 @@ class ListInputDialogState extends State<ListInputDialog> {
   //TextEditingController _textEditingController = TextEditingController();
   DBHelper dbHelper = DBHelper();
   bool isFavourite = false;
+  String itemName = '';
   @override
   Widget build(BuildContext context) {
     return _constructDialog(context);
   }
 
   _constructDialog(BuildContext context) {
-    String itemName = '';
+    //String itemName = '';
     return AlertDialog(
           title: Text('New item entry'),
           content: TextField(
             autofocus: true,
             textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(hintText: 'Enter item name e.g. bread'),
-            onChanged: (value) {
-              itemName = value;
+            onChanged: (textVal) {
+              setState(() {
+                itemName = textVal;
+              });
             },
           ),
           actions: <Widget>[

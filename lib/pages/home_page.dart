@@ -4,6 +4,7 @@ import 'package:shopping_list_vs/utils/database_helper.dart';
 import 'package:shopping_list_vs/models/item.dart';
 import 'package:shopping_list_vs/models/shop_list.dart';
 import 'package:shopping_list_vs/utils/listItem_input_dialog.dart';
+import 'package:shopping_list_vs/pages/favourite_selection.dart';
 
 class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
@@ -22,6 +23,18 @@ class HomePageState extends State<HomePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Justlist'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.navigate_next),
+            tooltip: 'Faves Page',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FavouriteList())
+              );
+            },
+          )
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -54,13 +67,6 @@ class HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async{
           _scaffoldKey.currentState.hideCurrentSnackBar();
-          //_listGenState.currentState.tempInsert();
-
-          // final String newItemName = await _constructDialog(context);
-          // if(newItemName != null) {
-          //   dbHelper.insertItem(_constructNewItem(newItemName));
-          //   _listGenState.currentState.updateListDB();
-          // }
 
           await showDialog(
             context: context,

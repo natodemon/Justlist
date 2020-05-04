@@ -31,7 +31,7 @@ class ListGenState extends State<ListGen> {
       itemBuilder: (context, index) {
         return Dismissible(
           key: ValueKey(_itemList[index]),
-          onDismissed: (direction) {
+          onDismissed: (direction) {  // Should refactor this to separate method
             final dismissedListItem = _itemList[index];
             final int dismissedItemId = dismissedListItem.id;
             setState(() => _itemList.remove(dismissedListItem));
@@ -53,6 +53,7 @@ class ListGenState extends State<ListGen> {
                 if(reason != SnackBarClosedReason.action) {
                   dbHelper.deleteItem(dismissedItemId);
                   // Need to deal w/ checking if item is favourite and thus shouldn't be deleted from DB
+                  // Should instead clear the listID field
                 }
               });           
           },

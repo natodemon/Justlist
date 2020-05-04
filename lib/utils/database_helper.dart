@@ -78,6 +78,21 @@ class DBHelper {
     return selecItems;
   }
 
+  Future<List<Item>> getFavouriteItems() async {
+    Database db = await this.database;
+
+    var result = await db.query(tableItems,
+      where: '$colFavourite = 1'
+    );
+
+    List<Item> favItems = List<Item>();
+    for(int i = 0; i < result.length; i++) {
+      favItems.add(Item.fromMapObj(result[i]));
+    }
+
+    return favItems;
+  }
+
   Future<int> insertItem(Item newItem) async{
     Database db = await this.database;
 
@@ -89,6 +104,13 @@ class DBHelper {
     Database db = await this.database;
 
     var result = await db.delete(tableItems, where: 'id = ?', whereArgs: [id]);
+    return result;
+  }
+
+  Future<int> removeFavItem(int id) async{
+    Database db = await this.database;
+
+    var result = 1; // Add db.update operation here
     return result;
   }
 
