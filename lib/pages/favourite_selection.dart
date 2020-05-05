@@ -72,7 +72,6 @@ class FavouriteListState extends State<FavouriteList> {
                 ),
                 onTap: () {
                   setState(() {
-                    // Do some selection stuff here
                     int curItemId = _favList[index].id;
                     if(_selectedIDs.contains(curItemId)) {
                       _selectedIDs.remove(curItemId);
@@ -97,7 +96,6 @@ class FavouriteListState extends State<FavouriteList> {
       futureFavList.then((favList) {
         setState(() {
           this._favList = favList;
-          //print(_itemList.length);
         });
       });
     });
@@ -122,14 +120,11 @@ class FavouriteListState extends State<FavouriteList> {
       )
       .closed.then((reason) {
         if(reason != SnackBarClosedReason.action) {
-          //dbHelper.removeFavItem(dismissedListItem.id);
-          // Think this should be an actual delete here, duh..
           dbHelper.deleteItem(dismissedListItem.id);
         }
       });
   }
 
-  // Will need check if any selections made 
   void addSelectedItems() {
     List<int> selecIdList = _selectedIDs.toList();
 

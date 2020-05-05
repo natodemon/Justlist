@@ -21,6 +21,7 @@ class HomePageState extends State<HomePage> {
   bool isChecked = false;
 
   int curShoplistId = 0;
+  ShopList curShopList;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class HomePageState extends State<HomePage> {
         title: Text('Justlist'),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.navigate_next),
+            icon: const Icon(Icons.star),
             tooltip: 'Faves Page',
             onPressed: () async {
               _scaffoldKey.currentState.hideCurrentSnackBar();
@@ -85,16 +86,6 @@ class HomePageState extends State<HomePage> {
         animatedIcon: AnimatedIcons.menu_arrow,
         children: [
           SpeedDialChild(
-            child: Icon(Icons.note_add),
-            backgroundColor: Colors.redAccent,
-            label: 'New List',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () async{
-              _scaffoldKey.currentState.hideCurrentSnackBar();
-              await handleNewListCreation();
-            }
-          ),
-          SpeedDialChild(
             child: Icon(Icons.edit_attributes),  // or Icons.mode_edit
             backgroundColor: Colors.blue,
             label: 'New Item',
@@ -110,6 +101,49 @@ class HomePageState extends State<HomePage> {
               );
               _listGenState.currentState.updateListDB();
             },
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.note_add),
+            backgroundColor: Colors.redAccent,
+            label: 'New List',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () async{
+              _scaffoldKey.currentState.hideCurrentSnackBar();
+
+              await showDialog(
+                context: context,
+                builder: (context){
+                  return AlertDialog(
+                    title: Text(
+                      'Are you sure you want to create a new list?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        MaterialButton(
+                          color: Colors.redAccent,
+                          child: Text('No'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        SizedBox(width: 30.0),
+                        MaterialButton(
+                          color: Colors.blueAccent,
+                          child: Text('Yes'),
+                          onPressed: () {
+                            handleNewListCreation();
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    ),
+                  );
+                },
+              );
+            }
           )
         ],
       ),
@@ -117,12 +151,23 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<int> handleNewListCreation() async {
-    _incrementListId();
-    //int needToWait = await dbHelper.insertList(genNewShopList());
+    int opsSum = 0;
+    opsSum += await _incrementListId();
 
-    _listGenState.currentState.updateListDB();
+    // ** For testing purposes **
+    var now = DateTime.now();
+    var testOldTime = now.subtract(Duration(days: 5));
+    var oldListTime = testOldTime;
+    // ** End of testing purposes **
+
+    //var oldListTime = DateTime.fromMillisecondsSinceEpoch(curShopList.dateCreated);
+    var listTimeElapsed = DateTime.now().difference(oldListTime);
+    opsSum += await dbHelper.autoItemInsert(listTimeElapsed.inDays, curShoplistId);
+
+    _listGenState.currentState.newListSetup();
     // async delete old items or handle in DBhelper
-    //return needToWait;
+
+    return opsSum;
   }
 
   void _fetchListId() async{
@@ -134,7 +179,10 @@ class HomePageState extends State<HomePage> {
     // Adds list if new one doesn't exist w/ ID
     bool outcome = await dbHelper.checkListIdExists(curShoplistId);
     if(!outcome) {
-      await dbHelper.insertList(genNewShopList());
+      setState(() {
+        curShopList = genNewShopList();
+      });
+      await dbHelper.insertList(curShopList);
     }
   }
 
@@ -145,7 +193,10 @@ class HomePageState extends State<HomePage> {
       prefs.setInt('listCounter', curShoplistId);
     });
 
-    return await dbHelper.insertList(genNewShopList());
+    setState(() {
+      curShopList = genNewShopList();
+    });
+    return await dbHelper.insertList(curShopList);
   }
 
   ShopList genNewShopList() {
@@ -153,49 +204,4 @@ class HomePageState extends State<HomePage> {
 
     return ShopList.withId(curShoplistId, 'DynamicList$curShoplistId', timeNow);
   }
-
-  // Future<String> _constructDialog(BuildContext context) async{
-  //   String itemName = '';
-  //   //bool newchecked;
-  //   return showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: Text('New item entry'),
-  //         content: TextField(
-  //           autofocus: true,
-  //           textCapitalization: TextCapitalization.sentences,
-  //           decoration: InputDecoration(hintText: 'Enter item name e.g. bread'),
-  //           onChanged: (value) {
-  //             itemName = value;
-  //           },
-  //         ),
-  //         actions: <Widget>[
-  //           FlatButton(
-  //             child: Text('Add'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop(itemName);
-  //             },
-  //           ),
-  //           Text('Favorite'),
-  //           Checkbox(
-  //             value: isChecked,
-  //             onChanged: (bool newChecked) {
-  //               setState(() {
-  //                 isChecked = newChecked;
-  //               });
-  //             }
-  //           )
-  //         ],
-  //       );
-  //     }
-  //   );
-  // }
-
-  // Item _constructNewItem(String itemName) {
-  //   // Will need some validation here or at time of input
-  //   return Item(itemName,false,0);
-  // }
-
-  // Can most likely remove this ^
 }

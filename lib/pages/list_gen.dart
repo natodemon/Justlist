@@ -37,7 +37,6 @@ class ListGenState extends State<ListGen> {
             final dismissedListItem = _itemList[index];
             final int dismissedItemId = dismissedListItem.id;
             setState(() => _itemList.remove(dismissedListItem));
-            //setState(() => dbHelper.deleteItem(dismissedItem.id));
             Scaffold.of(context).hideCurrentSnackBar();
             Scaffold.of(context)
               .showSnackBar(SnackBar(
@@ -58,8 +57,6 @@ class ListGenState extends State<ListGen> {
                   }else {
                     dbHelper.deleteItem(dismissedItemId);
                   }
-                  // Need to deal w/ checking if item is favourite and thus shouldn't be deleted from DB
-                  // Should instead clear the listID field
                 }
               });           
           },
@@ -101,27 +98,26 @@ class ListGenState extends State<ListGen> {
       futureItemList.then((itemList) {
         setState(() {
           this._itemList = itemList;
-          //print(_itemList.length);
         });
       });
     });
   }
 
-  // !! Testing Purposes only !!
-  // void tempInsert() async{
-  //   ShopList tempShopList = ShopList('First List');
-  //   await dbHelper.insertList(tempShopList);
-
-  //   Item tempItem0 = Item('Potatoes', false, 0);
-  //   Item tempItem1 = Item('Bananas', false, 0);
-  //   Item tempItem2 = Item('Bread', true, 0);
-
-  //   await dbHelper.insertItem(tempItem0);
-  //   await dbHelper.insertItem(tempItem1);
-  //   await dbHelper.insertItem(tempItem2);
-
-  //   updateListDB();
-  // }
+  void newListSetup() {
+    setState(() {
+      this._itemList = List<Item>(); // Blank out list removing old items
+      this._selectItems.clear();
+    });
+    final Future<Database> dbFuture = dbHelper.initDB();
+    dbFuture.then((database) {
+      Future<List<Item>> futureItemList = dbHelper.getItemsForShopList(widget.shopListId);
+      futureItemList.then((newItemList) {
+        setState(() {
+          this._itemList = newItemList;
+        });
+      });
+    });
+  }
 
   void stringList() async {
     // When item ID added to list, sleep no. of secs to allow for multiple selection

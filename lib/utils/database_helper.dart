@@ -160,6 +160,28 @@ class DBHelper {
     return await db.delete(tableLists, where: 'id = ? ', whereArgs: [id]);
   }
 
+  Future<bool> checkListIdExists(int id) async{
+    Database db = await this.database;
+
+    var result = await db.rawQuery("SELECT EXISTS(SELECT 1 FROM $tableLists WHERE $colId=$id LIMIT 1)");
+
+    int resCount = Sqflite.firstIntValue(result);
+    return (resCount == 1);
+  }
+
+  Future<int> autoItemInsert(int timeout, int shopListId) async{
+    Database db = await this.database;
+
+    var result = await db.rawQuery("SELECT $colId FROM $tableItems WHERE $colFavourite = 1 AND $colTimeout <= $timeout");
+    
+    int resSum = 0;
+    for(int i = 0; i < result.length; i++) {
+      int tempId = result[i]['id'];
+      resSum += await setItemShopList(tempId, shopListId);
+    }
+    return resSum;
+  }
+
   // ****************************
   // Temp methods for development
   // ****************************
@@ -170,15 +192,6 @@ class DBHelper {
     var result = await db.rawQuery("SELECT * FROM $tableLists ORDER BY $colId ASC LIMIT 1");
     ShopList fList = ShopList.fromMapObj(result[0]);
     return fList;
-  }
-
-  Future<bool> checkListIdExists(int id) async{
-    Database db = await this.database;
-
-    var result = await db.rawQuery("SELECT EXISTS(SELECT 1 FROM $tableLists WHERE $colId=$id LIMIT 1)");
-
-    int resCount = Sqflite.firstIntValue(result);
-    return (resCount == 1);
   }
 
   Future<List<Map<String, dynamic>>> getAllItems() async {

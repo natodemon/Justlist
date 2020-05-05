@@ -12,7 +12,6 @@ class ListInputDialog extends StatefulWidget {
 }
 
 class ListInputDialogState extends State<ListInputDialog> {
-  //TextEditingController _textEditingController = TextEditingController();
   DBHelper dbHelper = DBHelper();
   
   // Input variables
@@ -26,7 +25,6 @@ class ListInputDialogState extends State<ListInputDialog> {
   }
 
   _constructDialog(BuildContext context) {
-    //String itemName = '';
     return AlertDialog(
           title: Text('New item entry'),
           content: Column(

@@ -3,7 +3,7 @@ class ShopList {
   
   int _id;
   String _title;
-  int _dateCreated;
+  int _dateCreated; // Eventually change this to DateTime obj
 
   ShopList(this._title, this._dateCreated);
   ShopList.withId(this._id, this._title, this._dateCreated);
@@ -26,7 +26,7 @@ class ShopList {
     }
 
     map['title'] = _title;
-    map['dateCreated'] = _dateCreated;
+    map['dateCreated'] = _dateCreated;  // Convert to DateTime obj when optimised
 
     return map;
   }
@@ -34,7 +34,7 @@ class ShopList {
   ShopList.fromMapObj(Map<String, dynamic> map) {
     this._id = map['id'];
     this._title = map['title'];
-    this._dateCreated = map['dateCreated'];
+    this._dateCreated = map['dateCreated']; // Covert from DateTime obj when optimised
   }
 
 }
