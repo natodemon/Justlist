@@ -7,7 +7,7 @@ import 'package:shopping_list_vs/models/shop_list.dart';
 
 class DBHelper {
   static final _dbName = 'ShoppingList.db';
-  static final _dbVersion = 2;
+  static final _dbVersion = 3;
   static Database _database;
 
   final String tableItems = 'Items';
@@ -18,6 +18,7 @@ class DBHelper {
   final String colFavourite = 'favourite';
   final String colListId = 'list_id';
   final String colTitle = 'title';
+  final String colDateCreated = 'dateCreated';
 
   static DBHelper _dbHelper;  // DBHelper class singleton
   factory DBHelper() {
@@ -47,7 +48,8 @@ class DBHelper {
     await db.execute(
       "CREATE TABLE $tableLists ("
         "$colId INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "$colTitle TEXT NOT NULL"
+        "$colTitle TEXT NOT NULL,"
+        "$colDateCreated INTEGER NOT NULL"
         ")"
       );
     await db.execute(
@@ -135,6 +137,17 @@ class DBHelper {
     return result;
   }
 
+  Future<ShopList> getShopListById(int id) async{
+    Database db = await this.database;
+
+    var result = await db.query(tableLists,
+      where: '$colId = $id'
+    );
+
+    ShopList sList = ShopList.fromMapObj(result[0]);
+    return sList;
+  }
+
   Future<int> insertList(ShopList newList) async{
     Database db = await this.database;
 
@@ -157,6 +170,15 @@ class DBHelper {
     var result = await db.rawQuery("SELECT * FROM $tableLists ORDER BY $colId ASC LIMIT 1");
     ShopList fList = ShopList.fromMapObj(result[0]);
     return fList;
+  }
+
+  Future<bool> checkListIdExists(int id) async{
+    Database db = await this.database;
+
+    var result = await db.rawQuery("SELECT EXISTS(SELECT 1 FROM $tableLists WHERE $colId=$id LIMIT 1)");
+
+    int resCount = Sqflite.firstIntValue(result);
+    return (resCount == 1);
   }
 
   Future<List<Map<String, dynamic>>> getAllItems() async {

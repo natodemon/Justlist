@@ -5,6 +5,8 @@ import 'package:shopping_list_vs/models/item.dart';
 import 'package:shopping_list_vs/models/shop_list.dart';
 import 'package:shopping_list_vs/utils/listItem_input_dialog.dart';
 import 'package:shopping_list_vs/pages/favourite_selection.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
@@ -14,20 +16,20 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   final GlobalKey<ListGenState> _listGenState = GlobalKey<ListGenState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  
   DBHelper dbHelper = DBHelper();
   bool isChecked = false;
 
-  int curShoplistId;   // Increment when making new list, store when changing list
-                       // And when exiting app, using shared prefs
-                       // !! 0 SHOULD NOT BE VALID SHOPLISTID !!
-                       // !! INCREMENT FROM 1 !!
+  int curShoplistId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchListId();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if(curShoplistId == null) {
-      curShoplistId = 1; // Will retrieve this from shared_prefs
-    }
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -38,11 +40,11 @@ class HomePageState extends State<HomePage> {
             tooltip: 'Faves Page',
             onPressed: () async {
               _scaffoldKey.currentState.hideCurrentSnackBar();
-              Navigator.push(
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => FavouriteList(curShoplistId))
               );
-              Future.delayed(Duration(seconds: 3), () {
+              Future.delayed(Duration(milliseconds: 500), () {
                 _listGenState.currentState.updateListDB();
               });
             },
@@ -77,23 +79,80 @@ class HomePageState extends State<HomePage> {
       ),
       drawerEdgeDragWidth: MediaQuery.of(context).size.width /6,
       body: ListGen(curShoplistId, key: _listGenState),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async{
-          _scaffoldKey.currentState.hideCurrentSnackBar();
-
-          await showDialog(
-            context: context,
-            builder: (context){
-              return ListInputDialog(curShoplistId);
+      floatingActionButton: SpeedDial(
+        tooltip: 'New Entry Selection',
+        shape: CircleBorder(),
+        animatedIcon: AnimatedIcons.menu_arrow,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.note_add),
+            backgroundColor: Colors.redAccent,
+            label: 'New List',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () async{
+              _scaffoldKey.currentState.hideCurrentSnackBar();
+              await handleNewListCreation();
             }
-          );
-          _listGenState.currentState.updateListDB();
-        },
-        child: Icon(Icons.add),
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.edit_attributes),  // or Icons.mode_edit
+            backgroundColor: Colors.blue,
+            label: 'New Item',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () async{
+              _scaffoldKey.currentState.hideCurrentSnackBar();
+
+              await showDialog(
+                context: context,
+                builder: (context){
+                  return ListInputDialog(curShoplistId);
+                }
+              );
+              _listGenState.currentState.updateListDB();
+            },
+          )
+        ],
       ),
     );
   }
 
+  Future<int> handleNewListCreation() async {
+    _incrementListId();
+    //int needToWait = await dbHelper.insertList(genNewShopList());
+
+    _listGenState.currentState.updateListDB();
+    // async delete old items or handle in DBhelper
+    //return needToWait;
+  }
+
+  void _fetchListId() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      curShoplistId = (prefs.getInt('listCounter') ?? 0);
+    });
+
+    // Adds list if new one doesn't exist w/ ID
+    bool outcome = await dbHelper.checkListIdExists(curShoplistId);
+    if(!outcome) {
+      await dbHelper.insertList(genNewShopList());
+    }
+  }
+
+  Future<int> _incrementListId() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      curShoplistId = (prefs.getInt('listCounter') ?? 0) + 1;
+      prefs.setInt('listCounter', curShoplistId);
+    });
+
+    return await dbHelper.insertList(genNewShopList());
+  }
+
+  ShopList genNewShopList() {
+    int timeNow = DateTime.now().toUtc().millisecondsSinceEpoch;
+
+    return ShopList.withId(curShoplistId, 'DynamicList$curShoplistId', timeNow);
+  }
 
   // Future<String> _constructDialog(BuildContext context) async{
   //   String itemName = '';
