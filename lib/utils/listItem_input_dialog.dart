@@ -99,8 +99,6 @@ class ListInputDialogState extends State<ListInputDialog> {
   }
 
   Item _constructNewItem(String itemName, bool favourite, int timeout) {
-    // Will need some validation here or at time of input
-    //int fav = (favourite == true ? 1 : 0);
     if(timeout != null) {
       return Item(itemName,favourite,widget.shopListId, timeout);
     }else{

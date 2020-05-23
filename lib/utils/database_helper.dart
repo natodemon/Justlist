@@ -182,22 +182,4 @@ class DBHelper {
     return resSum;
   }
 
-  // ****************************
-  // Temp methods for development
-  // ****************************
-
-  Future<ShopList> getFirstList() async{
-    Database db = await this.database;
-
-    var result = await db.rawQuery("SELECT * FROM $tableLists ORDER BY $colId ASC LIMIT 1");
-    ShopList fList = ShopList.fromMapObj(result[0]);
-    return fList;
-  }
-
-  Future<List<Map<String, dynamic>>> getAllItems() async {
-  Database db = await this.database;
-
-  var result = await db.query(tableItems);
-  return result;
-  }
 }

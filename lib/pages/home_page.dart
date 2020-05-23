@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list_vs/pages/list_gen.dart';
 import 'package:shopping_list_vs/utils/database_helper.dart';
-import 'package:shopping_list_vs/models/item.dart';
 import 'package:shopping_list_vs/models/shop_list.dart';
 import 'package:shopping_list_vs/utils/listItem_input_dialog.dart';
 import 'package:shopping_list_vs/pages/favourite_selection.dart';
@@ -152,6 +151,7 @@ class HomePageState extends State<HomePage> {
 
   Future<int> handleNewListCreation() async {
     int opsSum = 0;
+    //var oldListTime = DateTime.fromMillisecondsSinceEpoch(curShopList.dateCreated);
     opsSum += await _incrementListId();
 
     // ** For testing purposes **
@@ -160,7 +160,7 @@ class HomePageState extends State<HomePage> {
     var oldListTime = testOldTime;
     // ** End of testing purposes **
 
-    //var oldListTime = DateTime.fromMillisecondsSinceEpoch(curShopList.dateCreated);
+
     var listTimeElapsed = DateTime.now().difference(oldListTime);
     opsSum += await dbHelper.autoItemInsert(listTimeElapsed.inDays, curShoplistId);
 
