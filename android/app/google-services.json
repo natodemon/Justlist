@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "230959921171",
+    "firebase_url": "https://justlist-356a5.firebaseio.com",
+    "project_id": "justlist-356a5",
+    "storage_bucket": "justlist-356a5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230959921171:android:31480bfc3901c56c3727e6",
+        "android_client_info": {
+          "package_name": "com.mallocapps.shopping_list_vs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "230959921171-v9re4cj089tc155s4hkne1d3f0kb2auh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDs8w-lJ60SkP-wY7kJOR5biWU8mvAt0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "230959921171-v9re4cj089tc155s4hkne1d3f0kb2auh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

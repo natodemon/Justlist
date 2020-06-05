@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './pages/home_page.dart';
+import 'package:shopping_list_vs/pages/auth_wrapper.dart';
 
 void main() => runApp(ShoppingList());
 
@@ -11,7 +11,7 @@ class ShoppingList extends StatelessWidget {
     return MaterialApp(
       title: appTitle,
       color: Colors.blue,
-      home: HomePage(),
+      home: AuthWrapper(),
     );
   }
 }
