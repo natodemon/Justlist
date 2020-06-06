@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_list_vs/models/user.dart';
 import 'package:shopping_list_vs/pages/list_gen.dart';
+import 'package:shopping_list_vs/utils/auth.dart';
 import 'package:shopping_list_vs/utils/database_helper.dart';
 import 'package:shopping_list_vs/models/shop_list.dart';
 import 'package:shopping_list_vs/utils/listItem_input_dialog.dart';
@@ -18,6 +20,8 @@ class HomePageState extends State<HomePage> {
   
   DBHelper dbHelper = DBHelper();
   bool isChecked = false;
+  final AuthUtil _auth = AuthUtil();
+  
 
   int curShoplistId = 0;
   ShopList curShopList;
@@ -35,6 +39,13 @@ class HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Justlist'),
         actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.person),
+            tooltip: 'Logout',
+            onPressed: () async {
+              await _auth.signOut();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.star),
             tooltip: 'Faves Page',
