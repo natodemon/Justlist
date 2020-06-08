@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopping_list_vs/models/item_fs.dart';
 import 'package:shopping_list_vs/models/user.dart';
 import 'package:shopping_list_vs/pages/list_gen.dart';
 import 'package:shopping_list_vs/utils/auth.dart';
+import 'package:shopping_list_vs/utils/database_fs.dart';
 import 'package:shopping_list_vs/utils/database_helper.dart';
 import 'package:shopping_list_vs/models/shop_list.dart';
 import 'package:shopping_list_vs/utils/listItem_input_dialog.dart';
@@ -29,133 +32,136 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _fetchListId();
+    //_fetchListId();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text('Justlist'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.person),
-            tooltip: 'Logout',
-            onPressed: () async {
-              await _auth.signOut();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.star),
-            tooltip: 'Faves Page',
-            onPressed: () async {
-              _scaffoldKey.currentState.hideCurrentSnackBar();
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FavouriteList(curShoplistId))
-              );
-              Future.delayed(Duration(milliseconds: 500), () {
-                _listGenState.currentState.updateListDB();
-              });
-            },
-          )
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            SizedBox(
-              height: 80.0,
-              child: DrawerHeader(
-                child: Text('List Categories', style: TextStyle(color: Colors.white, fontSize: 18.0),),
-                decoration: BoxDecoration(color: Colors.blue),
-              ),
-            ),
-            ListTile(
-              title: Text('Dynamic List', style: TextStyle(fontSize: 18.0,),),
-              onTap: () {
-                Navigator.pop(context);
+    return StreamProvider<List<ItemFS>>.value(
+        value: FSDatabase().itemStream('EcHIwuuJsAc6bhHKop9z'),
+        child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text('Justlist'),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.person),
+              tooltip: 'Logout',
+              onPressed: () async {
+                await _auth.signOut();
               },
             ),
-            ListTile(
-              title: Text('Future Feature', style: TextStyle(fontSize: 18.0,),),
-              onTap: () {
-                Navigator.pop(context);
+            IconButton(
+              icon: const Icon(Icons.star),
+              tooltip: 'Faves Page',
+              onPressed: () async {
+                _scaffoldKey.currentState.hideCurrentSnackBar();
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FavouriteList(curShoplistId))
+                );
+                Future.delayed(Duration(milliseconds: 500), () {
+                  //_listGenState.currentState.updateListDB();
+                });
               },
             )
           ],
         ),
-      ),
-      drawerEdgeDragWidth: MediaQuery.of(context).size.width /6,
-      body: ListGen(curShoplistId, key: _listGenState),
-      floatingActionButton: SpeedDial(
-        tooltip: 'New Entry Selection',
-        shape: CircleBorder(),
-        animatedIcon: AnimatedIcons.menu_arrow,
-        children: [
-          SpeedDialChild(
-            child: Icon(Icons.edit_attributes),  // or Icons.mode_edit
-            backgroundColor: Colors.blue,
-            label: 'New Item',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () async{
-              _scaffoldKey.currentState.hideCurrentSnackBar();
-
-              await showDialog(
-                context: context,
-                builder: (context){
-                  return ListInputDialog(curShoplistId);
-                }
-              );
-              _listGenState.currentState.updateListDB();
-            },
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.note_add),
-            backgroundColor: Colors.redAccent,
-            label: 'New List',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () async{
-              _scaffoldKey.currentState.hideCurrentSnackBar();
-
-              await showDialog(
-                context: context,
-                builder: (context){
-                  return AlertDialog(
-                    title: Text(
-                      'Are you sure you want to create a new list?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    content: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        MaterialButton(
-                          color: Colors.redAccent,
-                          child: Text('No'),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                        SizedBox(width: 30.0),
-                        MaterialButton(
-                          color: Colors.blueAccent,
-                          child: Text('Yes'),
-                          onPressed: () {
-                            handleNewListCreation();
-                            Navigator.pop(context);
-                          },
-                        )
-                      ],
-                    ),
-                  );
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              SizedBox(
+                height: 80.0,
+                child: DrawerHeader(
+                  child: Text('List Categories', style: TextStyle(color: Colors.white, fontSize: 18.0),),
+                  decoration: BoxDecoration(color: Colors.blue),
+                ),
+              ),
+              ListTile(
+                title: Text('Dynamic List', style: TextStyle(fontSize: 18.0,),),
+                onTap: () {
+                  Navigator.pop(context);
                 },
-              );
-            }
-          )
-        ],
+              ),
+              ListTile(
+                title: Text('Future Feature', style: TextStyle(fontSize: 18.0,),),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+        ),
+        drawerEdgeDragWidth: MediaQuery.of(context).size.width /6,
+        body: ListGen(curShoplistId, key: _listGenState),
+        floatingActionButton: SpeedDial(
+          tooltip: 'New Entry Selection',
+          shape: CircleBorder(),
+          animatedIcon: AnimatedIcons.menu_arrow,
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.edit_attributes),  // or Icons.mode_edit
+              backgroundColor: Colors.blue,
+              label: 'New Item',
+              labelStyle: TextStyle(fontSize: 18.0),
+              onTap: () async{
+                _scaffoldKey.currentState.hideCurrentSnackBar();
+
+                await showDialog(
+                  context: context,
+                  builder: (context){
+                    return ListInputDialog(curShoplistId);
+                  }
+                );
+                //_listGenState.currentState.updateListDB();
+              },
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.note_add),
+              backgroundColor: Colors.redAccent,
+              label: 'New List',
+              labelStyle: TextStyle(fontSize: 18.0),
+              onTap: () async{
+                _scaffoldKey.currentState.hideCurrentSnackBar();
+
+                await showDialog(
+                  context: context,
+                  builder: (context){
+                    return AlertDialog(
+                      title: Text(
+                        'Are you sure you want to create a new list?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          MaterialButton(
+                            color: Colors.redAccent,
+                            child: Text('No'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                          SizedBox(width: 30.0),
+                          MaterialButton(
+                            color: Colors.blueAccent,
+                            child: Text('Yes'),
+                            onPressed: () {
+                              handleNewListCreation();
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }
+            )
+          ],
+        ),
       ),
     );
   }
@@ -175,7 +181,7 @@ class HomePageState extends State<HomePage> {
     var listTimeElapsed = DateTime.now().difference(oldListTime);
     opsSum += await dbHelper.autoItemInsert(listTimeElapsed.inDays, curShoplistId);
 
-    _listGenState.currentState.newListSetup();
+    //_listGenState.currentState.newListSetup();
     // async delete old items or handle in DBhelper
 
     return opsSum;
