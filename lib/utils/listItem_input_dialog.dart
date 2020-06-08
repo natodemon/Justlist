@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shopping_list_vs/models/item_fs.dart';
+import 'package:shopping_list_vs/utils/database_fs.dart';
 import 'package:shopping_list_vs/utils/database_helper.dart';
 import 'package:shopping_list_vs/models/item.dart';
 
@@ -87,7 +89,9 @@ class ListInputDialogState extends State<ListInputDialog> {
                     color: Colors.blue,
                     child: Text('Add'),
                     onPressed: () {
-                      dbHelper.insertItem(_constructNewItem(itemName,isFavourite, timeoutVal));
+                      //dbHelper.insertItem(_constructNewItem(itemName,isFavourite, timeoutVal));
+                      ItemFS newItem = ItemFS(name: itemName, favourite: isFavourite, timeout: timeoutVal);
+                      FSDatabase().newItem('EcHIwuuJsAc6bhHKop9z', newItem.toFirestore());
                       Navigator.of(context).pop();
                     },
                   )

@@ -29,4 +29,15 @@ class ItemFS {
     FSDatabase().modifyItem(listId, this.docId, {'selected': !this.selected});
   }
 
+  Map<String, dynamic> toFirestore() {
+    var map = Map<String, dynamic>();
+
+    map['name'] = this.name;
+    map['timeout'] = this.timeout ?? 0;
+    map['favourite'] = this.favourite ?? false;
+    map['selected'] = this.selected ?? false;
+
+    return map;
+  }
+
 }

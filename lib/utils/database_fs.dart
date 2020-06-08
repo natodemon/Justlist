@@ -30,6 +30,11 @@ class FSDatabase {
       .delete();
   }
 
+  newItem(String listId, Map newData) async{
+    return await fs.document('ShopLists/$listId').collection('Items')
+      .add(newData);
+  }
+
 
   // ****************************
   // Testing methods, not for production!

@@ -17,20 +17,19 @@ class ListGen extends StatefulWidget {
 class ListGenState extends State<ListGen> {
   DBHelper dbHelper = DBHelper();
   //final Set<int> _selectItems = Set<int>();
-  List<ItemFS> itemSrc;
   List<ItemFS> _itemList;
   
 
   @override
   Widget build(BuildContext context) {
-    itemSrc = Provider.of<List<ItemFS>>(context);
+    _itemList = Provider.of<List<ItemFS>>(context);
     return _buildCurList(context);
   }
 
   Widget _buildCurList(BuildContext context) {
-    if(_itemList == null) {
-      _itemList = itemSrc;
-    }
+    // if(_itemList == null) {
+    //   _itemList = itemSrc;
+    // }
     //final _itemList = Provider.of<List<ItemFS>>(context);
 
     return ListView.builder(
@@ -52,8 +51,8 @@ class ListGenState extends State<ListGen> {
                   onPressed: () {
                     //updateListDB();   // Causes local list to be repopulated from database
                     setState(() {
-                      this._itemList = List<ItemFS>();
-                      this._itemList = itemSrc;
+                      // this._itemList = List<ItemFS>();
+                      // this._itemList = itemSrc;
                     });
                   },
                 ),
