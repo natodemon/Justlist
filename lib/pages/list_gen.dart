@@ -41,6 +41,7 @@ class ListGenState extends State<ListGen> {
             final dismissedListItem = _itemList[index];
             //final int dismissedItemId = dismissedListItem.id;
             setState(() => _itemList.remove(dismissedListItem));
+              // instead create hidden attrib for items and only display !hidden
             Scaffold.of(context).hideCurrentSnackBar();
             Scaffold.of(context)
               .showSnackBar(SnackBar(
